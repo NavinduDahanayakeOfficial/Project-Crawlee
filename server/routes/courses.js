@@ -8,18 +8,19 @@ import {
   getCourses,
   updateCourse,
 } from "../controllers/courseController.js";
+import { adminOnly, protect } from "../utils/verifyToken.js";
 
 
 const router = express.Router();
 
 //CREATE
-router.post("/", createCourse);
+router.post("/",  protect, createCourse);
 
 //UPDATE
-router.put("/:id",  updateCourse);
+router.put("/:id",  protect,  updateCourse);
 
 //DELETE
-router.delete("/:id", deleteCourse);
+router.delete("/:id",  protect, deleteCourse);
 
 //GET
 router.get("/:id", getCourse);
@@ -28,7 +29,7 @@ router.get("/:id", getCourse);
 router.get("/", getCourses);
 
 //change the course status
-router.patch("/:courseId/changeStatus", changeCourseStatus);
+router.patch("/:courseId/changeStatus",  protect, adminOnly, changeCourseStatus);
 
 
 export default router;

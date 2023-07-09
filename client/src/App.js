@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useContext } from "react";
+import {  BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
 import Messages from "./pages/Messages";
@@ -22,10 +23,14 @@ import StudentProfile from "./pages/StudentProfile";
 import AllCourses from "./pages/AllCourses";
 import Request from "./pages/Request";
 import Certificate from "./components/Certificate/Certificate";
+import { AuthContext } from "./context/AuthContext";
+
+
 
 axios.defaults.withCredentials = true;
 
 function App() {
+  const { user } = useContext(AuthContext);
   
 
   return (

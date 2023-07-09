@@ -1,58 +1,39 @@
 import jwt from "jsonwebtoken";
 import { createError } from "./error.js";
+import User from "../models/User.js";
 
-export const verifyToken = (req, res, next) => {
-  const token = req.cookies.access_token;
+export const protect = async (req, res, next) => {
+  try {
+     const token = req.cookies.access_token;
 
-  if (!token) {
-    return next(createError(401, "You are not authorized"));
+     if (!token) {
+      return next(createError(401,"Not authorized, please login."));
+     }
+
+     //verify token
+     const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+     //get user id from token
+     //then using that id get the user from the database, but exclude the password property from the query result   
+     //for security reasons
+     const user = await User.findById(verified.id).select("-password");
+
+     if (!user) {
+      return next(createError(404,"User not found"));
+     }
+
+     req.user = user;
+     next();
+  } catch (error) {
+    return next(createError(401,"Not authorized, please login."));
   }
-
-  jwt.verify(token, process.env.JWT, (err, user) => {
-    if (err) {
-      return next(createError(403, "Token invalid."));
-    }
-    req.user = user;
-    next();
-  });
 };
 
-export const verifyUser = (req, res, next) => {
-  verifyToken(req, res, () => {
-    if (req.user.id === req.params.id || req.user.isAdmin) {
-      next();
-    } else {
-      if (err) return next(createError(403, "You are not authorized"));
-    }
-  });
+export const adminOnly =  async (req, res, next) => {
+  if (req.user && req.user.isAdmin === true) {
+     next();
+  } else {
+    return next(createError(401,"Not authorized as an admin."));
+  }
 };
 
-export const verifyAdmin = (req, res, next) => {
-  verifyToken(req, res, () => {
-    if (req.user.isAdmin) {
-      next();
-    } else {
-      if (err) return next(createError(403, "You are not authorized"));
-    }
-  });
-};
-
-export const verifyTeacher = (req, res, next) => {
-  verifyToken(req, res, () => {
-    if (req.user.isTeacher) {
-      next();
-    } else {
-      if (err) return next(createError(403, "You are not authorized"));
-    }
-  });
-};
-
-export const verifyTecherOrAdmin = (req, res, next) => {
-  verifyToken(req, res, () => {
-    if (req.user.isTeacher || req.user.isAdmin) {
-      next();
-    } else {
-      if (err) return next(createError(403, "You are not authorized"));
-    }
-  });
-};

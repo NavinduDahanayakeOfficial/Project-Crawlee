@@ -1,4 +1,5 @@
 import Course from "../models/Course.js";
+import User from "../models/User.js";
 
 export const createCourse = async (req, res, next) => {
   const newCourse = new Course(req.body);
@@ -25,7 +26,19 @@ export const updateCourse = async (req, res, next) => {
 
 export const deleteCourse = async (req, res, next) => {
   try {
-    await Course.findByIdAndDelete(req.params.id);
+    const courseId = req.params.id;
+    // Find the course being deleted
+    const deletedCourse = await Course.findByIdAndDelete(courseId);
+
+    if (!deletedCourse) {
+      res.status(404).json("Course not found.");
+      return;
+    }
+
+    await User.updateMany(
+      { "enrolledCourses.courseId": courseId },
+      { $pull: { enrolledCourses: { courseId } } }
+    );
     res.status(200).json("Course has been deleted.");
   } catch (err) {
     next(err);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {  useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -14,7 +14,6 @@ import {
    RemMeAndForgetPass,
    CustomCheck,
    Btn,
-   HorizontalLine,
    BottomText,
    BoldTxt,
    ErrorMsg,
@@ -33,7 +32,7 @@ import NavbarHorizontal from "../../components/NavbarHorizontal";
 
 const Login = () => {
    const navigate = useNavigate();
-   const { user, loading, error, dispatch } = useContext(AuthContext);
+   const { dispatch } = useContext(AuthContext);
 
    const {
       values,
@@ -62,6 +61,7 @@ const Login = () => {
             const userData = {
                email: values.email,
                password: values.password,
+               rememberMe: values.rememberMe,
             };
 
             const response = await axios.post("http://localhost:8800/api/auth/login", userData);
@@ -135,6 +135,7 @@ const Login = () => {
                   <CustomCheck
                      type="checkbox"
                      id="customCheck1"
+                     name="rememberMe"
                      value={values.rememberMe}
                      onChange={handleChange}
                   ></CustomCheck>{" "}
@@ -152,10 +153,6 @@ const Login = () => {
             <Btn disabled={isSubmitting} type="submit">
                Log in
             </Btn>
-
-            {/* <HorizontalLine />
-
-            <Btn className="google">Login with Google</Btn> */}
 
             <BottomText>
                <BoldTxt>

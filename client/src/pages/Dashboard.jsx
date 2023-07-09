@@ -19,8 +19,6 @@ import { AuthContext } from "../context/AuthContext";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
-  
-
   return (
     <div
       role="tabpanel"
@@ -65,6 +63,7 @@ function Dashboard() {
 
   return (
     <>
+    
       <Sidebar setQuery={setQuery} />
       console.log(setQuery);
       <Navbar query={query} />

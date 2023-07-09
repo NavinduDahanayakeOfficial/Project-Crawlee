@@ -9,6 +9,7 @@ import {
   getUsers,
   updateUser,
 } from "../controllers/userController.js";
+import { adminOnly, protect } from "../utils/verifyToken.js";
 
 
 const router = express.Router();
@@ -26,27 +27,27 @@ const router = express.Router();
 // });
 
 //UPDATE
-router.put("/:id",  updateUser);
+router.put("/:id", protect, updateUser);
 
 //DELETE
-router.delete("/:id",  deleteUser);
+router.delete("/:id",  protect, deleteUser);
 
 //GET
-router.get("/:id", getUser);
+router.get("/:id",  protect, getUser);
 
 //GETALL
-router.get("/", getUsers);
+router.get("/",  protect, adminOnly, getUsers);
 
 //ENROLL COURSE
-router.post("/enroll", enrollCourse);
+router.post("/enroll",  protect, enrollCourse);
 
 //GET TOTAL ENROLLMENT COUNT CERTAIN COURSE
-router.get("/:courseId/student-count",  getTotalEnrolledCount);
+router.get("/:courseId/student-count",  protect,  getTotalEnrolledCount);
 
 //GET TOTAL COURSE COUNT BY TEACHER
-router.get("/:userId/total-courses-created",  getTotalCoursesCreated);
+router.get("/:userId/total-courses-created",  protect,  getTotalCoursesCreated);
 
 //Change the user role
-router.patch("/:userId/changeRole", changeUserRole);
+router.patch("/:userId/changeRole",  protect, adminOnly, changeUserRole);
 
 export default router;
